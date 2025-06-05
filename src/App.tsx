@@ -14,23 +14,16 @@ import NotFound from "./pages/NotFound"; // Assume NotFound.tsx exists
 
 const queryClient = new QueryClient();
 
-// Dummy auth check, replace with actual auth logic
+// Authentication is now disabled: always returns true.
 const isAuthenticated = () => {
-  // For demonstration, let's assume login state can be faked via localStorage or a simple flag.
-  // In a real app, this would involve checking tokens, context, etc.
-  // To test protected routes, you might manually set 'isLoggedIn' in localStorage from browser console.
-  return localStorage.getItem('isLoggedIn') === 'true'; 
+  return true; 
 };
 
 // ProtectedRoute component
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   if (!isAuthenticated()) {
-    // Redirect them to the /login page, but save the current location they were
-    // trying to go to when they were redirected. This allows us to send them
-    // along to that page after they login, which is a nicer user experience
-    // than dropping them off on the home page.
-    // To make login navigate to accounts and set 'isLoggedIn', LoginPage's onSubmit should do:
-    // localStorage.setItem('isLoggedIn', 'true'); navigate('/accounts');
+    // This block will effectively not be reached as isAuthenticated() is always true.
+    // Kept for structural understanding but redirection to /login will not happen.
     return <Navigate to="/login" replace />;
   }
   return children;
@@ -45,13 +38,13 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          {/* Default route: if authenticated go to /accounts, else /login */}
+          {/* Default route: now always navigates to /accounts as authentication is disabled */}
           <Route 
             path="/" 
-            element={isAuthenticated() ? <Navigate to="/accounts" replace /> : <Navigate to="/login" replace />} 
+            element={<Navigate to="/accounts" replace />} 
           />
           
-          {/* Protected Routes */}
+          {/* Protected Routes (now effectively public) */}
           <Route 
             path="/accounts" 
             element={<ProtectedRoute><AccountsPage /></ProtectedRoute>} 
